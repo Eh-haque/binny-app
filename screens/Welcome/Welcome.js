@@ -1,13 +1,19 @@
-import { View, Text, Image, StyleSheet, Pressable } from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    Pressable,
+    SafeAreaView,
+} from "react-native";
 import React from "react";
 import { secondaryColor } from "../../utils/colors";
-import Button from "../../components/Button";
 
 const Welcome = ({ navigation }) => {
     const [active, setActive] = React.useState(0);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={{ color: secondaryColor, fontSize: 50 }}>Binny</Text>
             <Image
                 style={styles.image}
@@ -62,7 +68,7 @@ const Welcome = ({ navigation }) => {
                     </Text>
                 </Pressable>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
