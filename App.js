@@ -9,6 +9,8 @@ import { mainColor, secondaryColor } from "./utils/colors";
 import Login from "./screens/Authenticate/Login";
 import Signup from "./screens/Authenticate/Signup";
 import TabNavigation from "./components/TabNavigation";
+import CheckLog from "./hooks/CheckLog";
+import Home from "./screens/Home/Home";
 
 const stackOptions = {
     headerStyle: {
@@ -19,47 +21,38 @@ const stackOptions = {
 };
 
 export default function App() {
+    const { isTokenExits } = CheckLog();
+    console.log(isTokenExits);
+
     const Stack = createNativeStackNavigator();
+
     // console.log(Appearance.getColorScheme());
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Welcome">
+            <Stack.Navigator initialRouteName={"Welcome"}>
                 <Stack.Screen
-                    name="Welcome"
-                    component={Welcome}
+                    name="TabNavigation"
+                    component={TabNavigation}
                     options={{ headerShown: false }}
                 />
+
+                <Stack.Screen
+                    name="Welcome"
+                    component={isTokenExits === true ? TabNavigation : Welcome}
+                    options={{ headerShown: false }}
+                />
+
                 <Stack.Screen
                     name="Log in"
                     component={Login}
                     options={stackOptions}
                 />
+
                 <Stack.Screen
                     name="Sign up"
                     component={Signup}
                     options={stackOptions}
-                />
-                {/* <Stack.Screen
-                    name="Home"
-                    component={Home}
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="Setting"
-                    component={Setting}
-                    options={stackOptions}
-                />
-                <Stack.Screen
-                    name="Feedback"
-                    component={Feedback}
-                    options={stackOptions}
-                /> */}
-
-                <Stack.Screen
-                    name="TabNavigation"
-                    component={TabNavigation}
-                    options={{ headerShown: false }}
                 />
             </Stack.Navigator>
 
@@ -67,12 +60,3 @@ export default function App() {
         </NavigationContainer>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: mainColor,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-});

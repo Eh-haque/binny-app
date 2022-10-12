@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 import {
     Pressable,
@@ -8,11 +9,46 @@ import {
     TextInput,
 } from "react-native";
 import { secondaryColor } from "../../utils/colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login({ navigation }) {
-    const [email, onChangeEmail] = React.useState(null);
-    const [password, onChangePassword] = React.useState(null);
+    const [email, onChangeEmail] = React.useState("");
+    const [password, onChangePassword] = React.useState("");
+    const [error, setError] = React.useState({});
     const [active, setActive] = React.useState(0);
+
+    const handleLogin = async () => {
+        if (!email.trim()) {
+            setError({ email: "Email is required" });
+        } else if (!password.trim()) {
+            setError({ password: "Password is required" });
+        } else {
+            setError({});
+
+            const payload = {
+                email: email,
+                password: password,
+            };
+            try {
+                const data = await axios.post(
+                    "https://map-api.makereal.click/login",
+                    payload
+                );
+                setError({ response: data.data.message });
+
+                if (data.data.message == "Login successful") {
+                    await AsyncStorage.setItem("@binnyToken", data.data.token);
+                    setTimeout(() => {
+                        setError({});
+                        navigation.navigate("TabNavigation");
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error(error.response.data);
+                setError({ validation: error.response.data.message });
+            }
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -31,6 +67,7 @@ export default function Login({ navigation }) {
                         placeholder="Enter email..."
                         value={email}
                     />
+                    {/* <Text style={{ color: "red" }}>{error?.email}</Text> */}
                 </View>
                 <View style={styles.inputContainer}>
                     <Text style={styles.inputText}>Password</Text>
@@ -41,14 +78,22 @@ export default function Login({ navigation }) {
                         placeholder="Enter password..."
                         secureTextEntry={true}
                     />
+                    {/* <Text style={{ color: "red" }}>{error?.password}</Text> */}
                 </View>
+            </View>
+
+            <View>
+                <Text style={{ color: "red" }}>
+                    {error?.email || error?.password || error?.validation}
+                </Text>
+                <Text style={{ color: "#fff" }}>{error?.response}</Text>
             </View>
 
             <View style={styles.buttonContainer}>
                 <Pressable
                     onPress={() => {
                         setActive(1);
-                        navigation.navigate("TabNavigation");
+                        handleLogin();
                     }}
                     style={
                         active === 1
@@ -67,10 +112,7 @@ export default function Login({ navigation }) {
                     </Text>
                 </Pressable>
 
-                <Pressable
-                    style={{ marginTop: "10%" }}
-                    onPress={() => navigation.navigate("Sign up")}
-                >
+                <Pressable style={{ marginTop: "10%" }} onPress={() => ""}>
                     <Text style={styles.otherText}>FORGOT PASSWORD?</Text>
                 </Pressable>
             </View>

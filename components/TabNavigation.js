@@ -6,6 +6,7 @@ import Feedback from "../screens/Feedback/Feedback";
 import Setting from "../screens/Setting/Setting";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { secondaryColor } from "../utils/colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Screen names
 const homeScreen = "Home";
@@ -64,7 +65,12 @@ export default function TabNavigation({ navigation }) {
                     return (
                         <SafeAreaView style={styles.container}>
                             <Icon
-                                onPress={() => navigation.navigate("Log in")}
+                                onPress={async () => {
+                                    navigation.navigate("Log in");
+                                    await AsyncStorage.removeItem(
+                                        "@binnyToken"
+                                    );
+                                }}
                                 name={"logout"}
                                 size={50}
                                 color={secondaryColor}

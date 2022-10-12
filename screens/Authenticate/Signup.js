@@ -8,13 +8,50 @@ import {
 } from "react-native";
 import React from "react";
 import { secondaryColor } from "../../utils/colors";
+import axios from "axios";
 
 export default function Signup({ navigation }) {
-    const [name, onChangeName] = React.useState(null);
-    const [email, onChangeEmail] = React.useState(null);
-    const [password, onChangePassword] = React.useState(null);
+    const [name, onChangeName] = React.useState("");
+    const [email, onChangeEmail] = React.useState("");
+    const [password, onChangePassword] = React.useState("");
+    const [error, setError] = React.useState({});
     const [active, setActive] = React.useState(0);
 
+    const handleSignup = async () => {
+        if (!name.trim()) {
+            setError({ name: "Name is required" });
+        } else if (!email.trim()) {
+            setError({ email: "Email is required" });
+        } else if (!password.trim()) {
+            setError({ password: "Password is required" });
+        } else {
+            setError({});
+
+            const payload = {
+                name: name,
+                email: email,
+                password: password,
+            };
+            try {
+                const data = await axios.post(
+                    "https://map-api.makereal.click/signup",
+                    payload
+                );
+                console.log(data);
+                setError({ response: data.data.message });
+
+                if (data.data.message == "Signup successful") {
+                    setTimeout(() => {
+                        setError({});
+                        navigation.navigate("Log in");
+                    }, 1500);
+                }
+            } catch (error) {
+                console.error(error.response.data);
+                setError({ validation: error.response.data.message });
+            }
+        }
+    };
     return (
         <SafeAreaView style={styles.container}>
             <View
@@ -54,11 +91,21 @@ export default function Signup({ navigation }) {
                 </View>
             </View>
 
+            <View>
+                <Text style={{ color: "red" }}>
+                    {error?.name ||
+                        error?.email ||
+                        error?.password ||
+                        error?.validation}
+                </Text>
+                <Text style={{ color: "#fff" }}>{error?.response}</Text>
+            </View>
+
             <View style={styles.buttonContainer}>
                 <Pressable
                     onPress={() => {
                         setActive(1);
-                        navigation.navigate("Log in");
+                        handleSignup();
                     }}
                     style={
                         active === 1
