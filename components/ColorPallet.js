@@ -33,7 +33,7 @@ export default function ColorPallet({
         >
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                    <ScrollView>
+                    <View>
                         <ColorPicker
                             color={activeColor}
                             thumbSize={20}
@@ -44,15 +44,13 @@ export default function ColorPallet({
                                 handleColor(color)
                             }
                         />
-                        {/* <Button title="revert" onPress={() => picker.revert()} /> */}
-                    </ScrollView>
-
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() => setModalVisible(!modalVisible)}
-                    >
-                        <Text style={styles.textStyle}>Done</Text>
-                    </Pressable>
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}
+                        >
+                            <Text style={styles.textStyle}>Done</Text>
+                        </Pressable>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -68,7 +66,7 @@ const styles = StyleSheet.create({
     },
     modalView: {
         margin: 30,
-        backgroundColor: "#000",
+        backgroundColor: "#2E2E2E",
         borderRadius: 20,
         padding: 20,
         alignItems: "center",
@@ -85,6 +83,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: 50,
         paddingVertical: 10,
+        marginTop: 50,
         elevation: 2,
     },
     buttonOpen: {

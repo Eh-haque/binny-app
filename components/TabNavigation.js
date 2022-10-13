@@ -70,6 +70,7 @@ export default function TabNavigation({ navigation }) {
                                     await AsyncStorage.removeItem(
                                         "@binnyToken"
                                     );
+                                    await AsyncStorage.removeItem("@addressName");
                                 }}
                                 name={"logout"}
                                 size={50}

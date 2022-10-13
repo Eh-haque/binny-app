@@ -4,7 +4,7 @@
     "slug": "AwesomeProject",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/binny.jpeg",
+    "icon": "./assets/binny.png",
     "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash.png",

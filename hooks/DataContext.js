@@ -1,7 +1,11 @@
-import React from "react";
+import React, { createContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
-const CheckColor = () => {
+export const DataContext = createContext();
+
+const DataProvider = (props) => {
+    // colors
     const [modalVisible, setModalVisible] = React.useState(false);
     const [activeColor, setActiveColor] = React.useState("");
     const [activeName, setActiveName] = React.useState("");
@@ -9,6 +13,7 @@ const CheckColor = () => {
     const [recycleColor, setRecycleColor] = React.useState("");
     const [gardenColor, setGardenColor] = React.useState("");
 
+    // colors
     React.useEffect(() => {
         const getColors = async () => {
             try {
@@ -35,20 +40,26 @@ const CheckColor = () => {
         getColors();
     }, [modalVisible]);
 
-    return {
-        modalVisible,
-        setModalVisible,
-        activeColor,
-        setActiveColor,
-        activeName,
-        setActiveName,
-        garbageColor,
-        setGarbageColor,
-        recycleColor,
-        setRecycleColor,
-        gardenColor,
-        setGardenColor,
-    };
+    return (
+        <DataContext.Provider
+            value={{
+                modalVisible,
+                setModalVisible,
+                activeColor,
+                setActiveColor,
+                activeName,
+                setActiveName,
+                garbageColor,
+                setGarbageColor,
+                recycleColor,
+                setRecycleColor,
+                gardenColor,
+                setGardenColor,
+            }}
+        >
+            {props.children}
+        </DataContext.Provider>
+    );
 };
 
-export default CheckColor;
+export default DataProvider;

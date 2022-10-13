@@ -17,7 +17,7 @@ const Welcome = ({ navigation }) => {
             <Text style={{ color: secondaryColor, fontSize: 50 }}>Binny</Text>
             <Image
                 style={styles.image}
-                source={require("../../assets/binny.jpeg")}
+                source={require("../../assets/binny.png")}
             />
             <Text style={{ color: secondaryColor, fontSize: 20 }}>
                 rolling your wheely bins.

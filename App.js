@@ -11,6 +11,7 @@ import Signup from "./screens/Authenticate/Signup";
 import TabNavigation from "./components/TabNavigation";
 import CheckLog from "./hooks/CheckLog";
 import Home from "./screens/Home/Home";
+import DataProvider from "./hooks/DataContext";
 
 const stackOptions = {
     headerStyle: {
@@ -27,34 +28,38 @@ export default function App() {
     // console.log(Appearance.getColorScheme());
 
     return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName={"Welcome"}>
-                <Stack.Screen
-                    name="TabNavigation"
-                    component={TabNavigation}
-                    options={{ headerShown: false }}
-                />
+        <DataProvider>
+            <NavigationContainer>
+                <Stack.Navigator initialRouteName={"Welcome"}>
+                    <Stack.Screen
+                        name="TabNavigation"
+                        component={TabNavigation}
+                        options={{ headerShown: false }}
+                    />
 
-                <Stack.Screen
-                    name="Welcome"
-                    component={isTokenExits === true ? TabNavigation : Welcome}
-                    options={{ headerShown: false }}
-                />
+                    <Stack.Screen
+                        name="Welcome"
+                        component={
+                            isTokenExits === true ? TabNavigation : Welcome
+                        }
+                        options={{ headerShown: false }}
+                    />
 
-                <Stack.Screen
-                    name="Log in"
-                    component={Login}
-                    options={stackOptions}
-                />
+                    <Stack.Screen
+                        name="Log in"
+                        component={Login}
+                        options={stackOptions}
+                    />
 
-                <Stack.Screen
-                    name="Sign up"
-                    component={Signup}
-                    options={stackOptions}
-                />
-            </Stack.Navigator>
+                    <Stack.Screen
+                        name="Sign up"
+                        component={Signup}
+                        options={stackOptions}
+                    />
+                </Stack.Navigator>
 
-            <StatusBar style="auto" />
-        </NavigationContainer>
+                <StatusBar style="auto" backgroundColor="#000" />
+            </NavigationContainer>
+        </DataProvider>
     );
 }

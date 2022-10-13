@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
     SafeAreaView,
     StyleSheet,
@@ -11,33 +11,37 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { secondaryColor } from "../../utils/colors";
 import ColorPallet from "../../components/ColorPallet";
-import CheckColor from "../../hooks/CheckColor";
 import CheckLog from "../../hooks/CheckLog";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { DataContext } from "../../hooks/DataContext";
 
 export let colorRefresh = false;
 
 export default function Setting() {
     const { token } = CheckLog();
 
-    const [address, onChangeAddress] = React.useState(null);
+    const [address, onChangeAddress] = React.useState("");
     const [configData, setConfigData] = React.useState([]);
     const [error, setError] = React.useState({});
 
     React.useEffect(() => {
-        axios
-            .post(
-                `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/?infoPanelWidth=0&mode=Refresh&form=918fd81b-bb3e-4bd1-8c78-1bd5b11fe1aa&resubmit=false&IntraMapsSession=${token}`,
-                { fields: [address] }
-            )
-            .then((res) => setConfigData(res.data.fullText))
-            .catch((err) => {
-                if (err.response.data) {
-                    setError({ server: "Something went wrong" });
-                }
-                console.error({ configData: err.response.data });
-            });
+        if (address.trim()) {
+            axios
+                .post(
+                    `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/?infoPanelWidth=0&mode=Refresh&form=918fd81b-bb3e-4bd1-8c78-1bd5b11fe1aa&resubmit=false&IntraMapsSession=${token}`,
+                    { fields: [address] }
+                )
+                .then((res) => setConfigData(res.data.fullText))
+                .catch((err) => {
+                    if (err.response.data) {
+                        setError({ server: "Something went wrong" });
+                    }
+                    console.error({ configData: err.response.data });
+                });
+        } else {
+            setConfigData([]);
+        }
     }, [address]);
 
     const {
@@ -50,7 +54,7 @@ export default function Setting() {
         garbageColor,
         recycleColor,
         gardenColor,
-    } = CheckColor();
+    } = useContext(DataContext);
 
     const onPressFunction = async (item) => {
         onChangeAddress("");
@@ -157,7 +161,6 @@ export default function Setting() {
                 <Text style={{ color: "red" }}>{error.server}</Text>
             )} */}
             {error.res && <Text style={{ color: "#fff" }}>{error.res}</Text>}
-
         </SafeAreaView>
     );
 }

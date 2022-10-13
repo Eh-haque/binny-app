@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
     SafeAreaView,
     ScrollView,
@@ -9,10 +9,10 @@ import {
 } from "react-native";
 import { secondaryColor } from "../../utils/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import CheckColor from "../../hooks/CheckColor";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import CheckLog from "../../hooks/CheckLog";
+import { DataContext } from "../../hooks/DataContext";
 
 const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -28,34 +28,7 @@ export default function Home({ navigation }) {
 
     const { token } = CheckLog();
 
-    const [garbageColor, setGarbageColor] = React.useState("");
-    const [recycleColor, setRecycleColor] = React.useState("");
-    const [gardenColor, setGardenColor] = React.useState("");
-    useEffect(() => {
-        const getColors = async () => {
-            try {
-                const garbageColor = await AsyncStorage.getItem(
-                    "@garbageColor"
-                );
-                if (garbageColor !== null) {
-                    setGarbageColor(garbageColor);
-                }
-                const recycleColor = await AsyncStorage.getItem(
-                    "@recycleColor"
-                );
-                if (recycleColor !== null) {
-                    setRecycleColor(recycleColor);
-                }
-                const gardenColor = await AsyncStorage.getItem("@gardenColor");
-                if (gardenColor !== null) {
-                    setGardenColor(gardenColor);
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        };
-        getColors();
-    }, [refreshing]);
+    const { garbageColor, recycleColor, gardenColor } = useContext(DataContext);
 
     const [address, setAddress] = React.useState({});
     const [mainData, setMainData] = React.useState([]);
@@ -74,22 +47,24 @@ export default function Home({ navigation }) {
     }, [refreshing]);
 
     React.useEffect(() => {
-        axios
-            .post(
-                `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/Refine/Set?IntraMapsSession=${token}`,
-                {
-                    dbKey: address.dbKey,
-                    infoPanelWidth: 0,
-                    mapKey: address.mapKey,
-                    mode: "Refresh",
-                    selectionLayer: address.selectionLayer,
-                    zoomType: "current",
-                }
-            )
-            .then((res) =>
-                setMainData(res.data.infoPanels.info1.feature.fields)
-            )
-            .catch((err) => console.error({ mainData: err.response.data }));
+        if (address.dbKey) {
+            axios
+                .post(
+                    `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/Refine/Set?IntraMapsSession=${token}`,
+                    {
+                        dbKey: address.dbKey,
+                        infoPanelWidth: 0,
+                        mapKey: address.mapKey,
+                        mode: "Refresh",
+                        selectionLayer: address.selectionLayer,
+                        zoomType: "current",
+                    }
+                )
+                .then((res) =>
+                    setMainData(res.data.infoPanels.info1.feature.fields)
+                )
+                .catch((err) => console.error({ mainData: err.response.data }));
+        }
     }, [address, refreshing]);
 
     let garbageData = {};
