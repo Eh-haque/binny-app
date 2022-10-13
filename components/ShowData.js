@@ -1,7 +1,6 @@
 import { ScrollView, View } from "react-native";
 
 const ShowData = ({ mainData }) => {
-    console.log({ mData: mainData });
     return (
         <ScrollView style={{ width: "80%", marginVertical: 5 }}>
             {mainData?.map((dt, i) => (

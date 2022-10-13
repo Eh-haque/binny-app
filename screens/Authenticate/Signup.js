@@ -37,7 +37,6 @@ export default function Signup({ navigation }) {
                     "https://map-api.makereal.click/signup",
                     payload
                 );
-                console.log(data);
                 setError({ response: data.data.message });
 
                 if (data.data.message == "Signup successful") {
@@ -47,7 +46,6 @@ export default function Signup({ navigation }) {
                     }, 1500);
                 }
             } catch (error) {
-                console.error(error.response.data);
                 setError({ validation: error.response.data.message });
             }
         }

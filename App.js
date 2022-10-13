@@ -22,8 +22,6 @@ const stackOptions = {
 
 export default function App() {
     const { isTokenExits } = CheckLog();
-    console.log(isTokenExits);
-
     const Stack = createNativeStackNavigator();
 
     // console.log(Appearance.getColorScheme());

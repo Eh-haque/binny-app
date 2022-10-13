@@ -44,7 +44,6 @@ export default function Login({ navigation }) {
                     }, 1500);
                 }
             } catch (error) {
-                console.error(error.response.data);
                 setError({ validation: error.response.data.message });
             }
         }

@@ -1,56 +1,168 @@
 import React from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import {
+    SafeAreaView,
+    ScrollView,
+    RefreshControl,
+    View,
+    Text,
+    StyleSheet,
+} from "react-native";
 import { secondaryColor } from "../../utils/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import CheckColor from "../../hooks/CheckColor";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import CheckLog from "../../hooks/CheckLog";
+
+const wait = (timeout) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+};
 
 export default function Home({ navigation }) {
-    const [active, setActive] = React.useState(0);
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
+
+    const { token } = CheckLog();
+    const { garbageColor, recycleColor, gardenColor } = CheckColor();
+
+    const [address, setAddress] = React.useState({});
+    const [mainData, setMainData] = React.useState([]);
+    React.useEffect(() => {
+        const getData = async () => {
+            try {
+                const value = await AsyncStorage.getItem("@addressName");
+                if (value !== null) {
+                    setAddress(JSON.parse(value));
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        getData();
+    }, [refreshing]);
+
+    React.useEffect(() => {
+        axios
+            .post(
+                `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/Refine/Set?IntraMapsSession=${token}`,
+                {
+                    dbKey: address.dbKey,
+                    infoPanelWidth: 0,
+                    mapKey: address.mapKey,
+                    mode: "Refresh",
+                    selectionLayer: address.selectionLayer,
+                    zoomType: "current",
+                }
+            )
+            .then((res) =>
+                setMainData(res.data.infoPanels.info1.feature.fields)
+            )
+            .catch((err) => console.error({ mainData: err.response.data }));
+    }, [address, refreshing]);
+
+    let garbageData = {};
+    let recycleData = {};
+    let gardenData = {};
+    mainData?.forEach((item) => {
+        // if (item.name == "Address") {
+        //     filteredData.push(item);
+        // }
+        if (item.name == "Garbage Collection") {
+            garbageData = item;
+        }
+        if (item.name == "Recycling Collection") {
+            recycleData = item;
+        }
+        if (item.name == "Garden Collection") {
+            gardenData = item;
+        }
+        // if (item.name == "Street Sweeping") {
+        //     filteredData.push(item);
+        // }
+        // if (item.name == "Ward Name") {
+        //     filteredData.push(item);
+        // }
+    });
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text
-                style={{
-                    color: secondaryColor,
-                    fontSize: 50,
-                    marginBottom: 25,
-                }}
+        <SafeAreaView style={{ flex: 1 }}>
+            <ScrollView
+                contentContainerStyle={styles.container}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             >
-                Binny
-            </Text>
+                <Text
+                    style={{
+                        color: secondaryColor,
+                        fontSize: 50,
+                        marginBottom: 25,
+                    }}
+                >
+                    Binny
+                </Text>
 
-            <Icon name="home" size={50} color={"#ffffff"} />
+                <Icon name="home" size={50} color={"#ffffff"} />
 
-            <Text style={[styles.text, { marginBottom: 30 }]}>
-                6 Arron Court, Endeavour Hills
-            </Text>
+                <Text style={[styles.text, { marginBottom: 30 }]}>
+                    {address?.displayValue || "Not found"}
+                </Text>
 
-            <View style={styles.textContainer}>
-                <View>
-                    <Icon name="label" size={50} color="green" />
+                <View style={styles.textContainer}>
+                    <View>
+                        <Icon
+                            name="label"
+                            size={50}
+                            color={`${garbageColor ? garbageColor : "green"}`}
+                        />
+                    </View>
+                    <View>
+                        <Text style={styles.text}>Garbage bin</Text>
+                        <Text style={styles.text}>
+                            {garbageData?.value || "Not found"}
+                        </Text>
+                    </View>
                 </View>
-                <View>
-                    <Text style={styles.text}>Garbage bin</Text>
-                    <Text style={styles.text}>Weekly on Tuesday</Text>
+                <View style={styles.textContainer}>
+                    <View>
+                        <Icon
+                            name="label"
+                            size={50}
+                            color={`${recycleColor ? recycleColor : "blue"}`}
+                        />
+                    </View>
+                    <View>
+                        <Text style={styles.text}>Recycle bin</Text>
+                        <Text style={styles.text}>
+                            {recycleData?.value || "Not found"}
+                        </Text>
+                    </View>
                 </View>
-            </View>
-            <View style={styles.textContainer}>
-                <View>
-                    <Icon name="label" size={50} color="blue" />
+                <View style={styles.textContainer}>
+                    <View>
+                        <Icon
+                            name="label"
+                            size={50}
+                            color={`${
+                                gardenColor ? gardenColor : secondaryColor
+                            }`}
+                        />
+                    </View>
+                    <View>
+                        <Text style={styles.text}>Garden bin</Text>
+                        <Text style={styles.text}>
+                            {gardenData?.value || "Not found"}
+                        </Text>
+                    </View>
                 </View>
-                <View>
-                    <Text style={styles.text}>Garbage bin</Text>
-                    <Text style={styles.text}>Weekly on Tuesday</Text>
-                </View>
-            </View>
-            <View style={styles.textContainer}>
-                <View>
-                    <Icon name="label" size={50} color={secondaryColor} />
-                </View>
-                <View>
-                    <Text style={styles.text}>Garbage bin</Text>
-                    <Text style={styles.text}>Weekly on Tuesday</Text>
-                </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
