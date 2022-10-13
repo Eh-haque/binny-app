@@ -23,6 +23,7 @@ export default function Setting() {
 
     const [address, onChangeAddress] = React.useState(null);
     const [configData, setConfigData] = React.useState([]);
+    const [error, setError] = React.useState({});
 
     React.useEffect(() => {
         axios
@@ -32,6 +33,9 @@ export default function Setting() {
             )
             .then((res) => setConfigData(res.data.fullText))
             .catch((err) => {
+                if (err.response.data) {
+                    setError({ server: "Something went wrong" });
+                }
                 console.error({ configData: err.response.data });
             });
     }, [address]);
@@ -52,6 +56,7 @@ export default function Setting() {
         onChangeAddress("");
         await AsyncStorage.setItem("@addressName", JSON.stringify(item));
         setConfigData([]);
+        setError({ res: "Address selected successfully." });
     };
 
     const renderItem = ({ item, i }) => (
@@ -148,12 +153,11 @@ export default function Setting() {
                 setModalVisible={setModalVisible}
             />
 
-            {/* <Pressable
-                style={[styles.button, styles.buttonOpen]}
-                onPress={() => setModalVisible(true)}
-            >
-                <Text style={styles.textStyle}>Show Modal</Text>
-            </Pressable> */}
+            {/* {error.server && (
+                <Text style={{ color: "red" }}>{error.server}</Text>
+            )} */}
+            {error.res && <Text style={{ color: "#fff" }}>{error.res}</Text>}
+
         </SafeAreaView>
     );
 }

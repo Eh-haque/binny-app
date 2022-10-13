@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     SafeAreaView,
     ScrollView,
@@ -27,7 +27,35 @@ export default function Home({ navigation }) {
     }, []);
 
     const { token } = CheckLog();
-    const { garbageColor, recycleColor, gardenColor } = CheckColor();
+
+    const [garbageColor, setGarbageColor] = React.useState("");
+    const [recycleColor, setRecycleColor] = React.useState("");
+    const [gardenColor, setGardenColor] = React.useState("");
+    useEffect(() => {
+        const getColors = async () => {
+            try {
+                const garbageColor = await AsyncStorage.getItem(
+                    "@garbageColor"
+                );
+                if (garbageColor !== null) {
+                    setGarbageColor(garbageColor);
+                }
+                const recycleColor = await AsyncStorage.getItem(
+                    "@recycleColor"
+                );
+                if (recycleColor !== null) {
+                    setRecycleColor(recycleColor);
+                }
+                const gardenColor = await AsyncStorage.getItem("@gardenColor");
+                if (gardenColor !== null) {
+                    setGardenColor(gardenColor);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        getColors();
+    }, [refreshing]);
 
     const [address, setAddress] = React.useState({});
     const [mainData, setMainData] = React.useState([]);
