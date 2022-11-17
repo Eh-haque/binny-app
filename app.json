@@ -18,21 +18,25 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "1",
+      "bundleIdentifier": "com.binny.australia"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.ehtisam.AwesomeProject"
+      "package": "com.binny.australia",
+      "versionCode": 1,
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "93729f53-3b30-458c-9270-6cd42d9bda25"
+        "projectId": "3d782327-8021-44d4-9823-ee320c7dfc01"
       }
     }
   }
