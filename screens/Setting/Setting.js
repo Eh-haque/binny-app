@@ -3,10 +3,11 @@ import {
     SafeAreaView,
     StyleSheet,
     Text,
-    TextInput,
+    RefreshControl,
     View,
     FlatList,
     Pressable,
+    ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { secondaryColor } from '../../utils/colors';
@@ -19,13 +20,22 @@ import SearchBar from 'react-native-dynamic-search-bar';
 
 export let colorRefresh = false;
 
+const wait = (timeout) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+};
+
 export default function Setting({ navigation }) {
+    const [refreshing, setRefreshing] = React.useState(false);
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
+
     const { token } = CheckLog();
 
     const [address, onChangeAddress] = React.useState('');
     const [text, setText] = React.useState('Enter address...');
     const [configData, setConfigData] = React.useState([]);
-    const [filteredDataSource, setFilteredDataSource] = React.useState([]);
     const [error, setError] = React.useState({});
 
     React.useEffect(() => {
@@ -37,7 +47,6 @@ export default function Setting({ navigation }) {
                 )
                 .then((res) => {
                     setConfigData(res.data.fullText);
-                    setFilteredDataSource(res.data.fullText);
                 })
                 .catch((err) => {
                     if (err.response.data) {
@@ -99,7 +108,11 @@ export default function Setting({ navigation }) {
                     placeholder={text}
                     onPress={() => alert('Search Address')}
                     onChangeText={(text) => onChangeAddress(text)}
-                    onClearPress={() => setText('Enter address...')}
+                    onClearPress={() => {
+                        setText('Enter address...');
+                        setConfigData([]);
+                        setError({});
+                    }}
                 />
 
                 {/* <TextInput
@@ -116,6 +129,12 @@ export default function Setting({ navigation }) {
                         data={configData}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={renderItem}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                     />
                 </View>
             )}
