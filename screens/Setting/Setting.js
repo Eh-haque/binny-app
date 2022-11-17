@@ -15,14 +15,17 @@ import CheckLog from '../../hooks/CheckLog';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DataContext } from '../../hooks/DataContext';
+import SearchBar from 'react-native-dynamic-search-bar';
 
 export let colorRefresh = false;
 
-export default function Setting() {
+export default function Setting({ navigation }) {
     const { token } = CheckLog();
 
     const [address, onChangeAddress] = React.useState('');
+    const [text, setText] = React.useState('Enter address...');
     const [configData, setConfigData] = React.useState([]);
+    const [filteredDataSource, setFilteredDataSource] = React.useState([]);
     const [error, setError] = React.useState({});
 
     React.useEffect(() => {
@@ -32,7 +35,10 @@ export default function Setting() {
                     `https://gisweb.casey.vic.gov.au/IntraMaps22A/ApplicationEngine/Search/?infoPanelWidth=0&mode=Refresh&form=918fd81b-bb3e-4bd1-8c78-1bd5b11fe1aa&resubmit=false&IntraMapsSession=${token}`,
                     { fields: [address] }
                 )
-                .then((res) => setConfigData(res.data.fullText))
+                .then((res) => {
+                    setConfigData(res.data.fullText);
+                    setFilteredDataSource(res.data.fullText);
+                })
                 .catch((err) => {
                     if (err.response.data) {
                         setError({ server: 'Something went wrong' });
@@ -59,11 +65,14 @@ export default function Setting() {
 
     const onPressFunction = async (item) => {
         onChangeAddress('');
+        setText(item.displayValue);
         await AsyncStorage.setItem('@addressName', JSON.stringify(item));
         setAddressData(item);
 
         setConfigData([]);
         setError({ res: 'Address selected successfully.' });
+
+        navigation.navigate('Home');
     };
 
     const renderItem = ({ item, i }) => (
@@ -85,17 +94,29 @@ export default function Setting() {
         <SafeAreaView style={styles.container}>
             <View style={styles.inputContainer}>
                 <Text style={styles.inputText}>Set home address</Text>
-                <TextInput
+                <SearchBar
+                    style={styles.input}
+                    placeholder={text}
+                    onPress={() => alert('Search Address')}
+                    onChangeText={(text) => onChangeAddress(text)}
+                    onClearPress={() => setText('Enter address...')}
+                />
+
+                {/* <TextInput
                     style={styles.input}
                     onChangeText={onChangeAddress}
                     placeholder="Enter address..."
-                    value={address}
-                />
+                    value={address || text || ''}
+                /> */}
             </View>
 
             {configData?.length > 0 && (
                 <View style={styles.card}>
-                    <FlatList data={configData} renderItem={renderItem} />
+                    <FlatList
+                        data={configData}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={renderItem}
+                    />
                 </View>
             )}
 
@@ -163,7 +184,11 @@ export default function Setting() {
             {/* {error.server && (
                 <Text style={{ color: "red" }}>{error.server}</Text>
             )} */}
-            {error.res && <Text style={{ color: '#fff' }}>{error.res}</Text>}
+            {error.res && (
+                <Text style={{ color: '#fff', marginTop: 50 }}>
+                    {error.res}
+                </Text>
+            )}
         </SafeAreaView>
     );
 }
@@ -188,6 +213,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     input: {
+        width: '100%',
         height: 50,
         borderWidth: 1,
         padding: 10,
