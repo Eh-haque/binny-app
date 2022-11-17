@@ -1,24 +1,21 @@
-import React from "react";
-import { Appearance } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-// import { StatusBar } from "expo-status-bar";
-import { StyleSheet, StatusBar } from "react-native";
-import Welcome from "./screens/Welcome/Welcome";
-import { mainColor, secondaryColor } from "./utils/colors";
-import Login from "./screens/Authenticate/Login";
-import Signup from "./screens/Authenticate/Signup";
-import TabNavigation from "./components/TabNavigation";
-import CheckLog from "./hooks/CheckLog";
-import Home from "./screens/Home/Home";
-import DataProvider from "./hooks/DataContext";
+import React from 'react';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Welcome from './screens/Welcome/Welcome';
+import { mainColor, secondaryColor } from './utils/colors';
+import Login from './screens/Authenticate/Login';
+import Signup from './screens/Authenticate/Signup';
+import TabNavigation from './components/TabNavigation';
+import CheckLog from './hooks/CheckLog';
+import DataProvider from './hooks/DataContext';
+import { StatusBar } from 'expo-status-bar';
 
 const stackOptions = {
     headerStyle: {
-        backgroundColor: "#000000",
+        backgroundColor: mainColor,
     },
     headerTintColor: secondaryColor,
-    headerTitleAlign: "center",
+    headerTitleAlign: 'center',
 };
 
 export default function App() {
@@ -29,8 +26,8 @@ export default function App() {
 
     return (
         <DataProvider>
-            <NavigationContainer>
-                <Stack.Navigator initialRouteName={"Welcome"}>
+            <NavigationContainer theme={DarkTheme}>
+                <Stack.Navigator initialRouteName={'Welcome'}>
                     <Stack.Screen
                         name="TabNavigation"
                         component={TabNavigation}
@@ -58,7 +55,11 @@ export default function App() {
                     />
                 </Stack.Navigator>
 
-                <StatusBar style="auto" backgroundColor="#000" />
+                <StatusBar
+                    style="light"
+                    animated={true}
+                    backgroundColor={mainColor}
+                />
             </NavigationContainer>
         </DataProvider>
     );

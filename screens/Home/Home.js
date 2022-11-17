@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -6,89 +6,45 @@ import {
     View,
     Text,
     StyleSheet,
-} from "react-native";
-import { secondaryColor } from "../../utils/colors";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import CheckLog from "../../hooks/CheckLog";
-import { DataContext } from "../../hooks/DataContext";
+} from 'react-native';
+import { secondaryColor } from '../../utils/colors';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { DataContext } from '../../hooks/DataContext';
 
 const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
 export default function Home({ navigation }) {
-    const [refreshing, setRefreshing] = React.useState(false);
-
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         wait(2000).then(() => setRefreshing(false));
     }, []);
 
-    const { token } = CheckLog();
+    const {
+        refreshing,
+        setRefreshing,
+        name,
+        mainData,
+        garbageColor,
+        recycleColor,
+        gardenColor,
+    } = useContext(DataContext);
 
-    const { garbageColor, recycleColor, gardenColor } = useContext(DataContext);
+    let garbageData = '';
+    let recycleData = '';
+    let gardenData = '';
 
-    const [address, setAddress] = React.useState({});
-    const [mainData, setMainData] = React.useState([]);
-    React.useEffect(() => {
-        const getData = async () => {
-            try {
-                const value = await AsyncStorage.getItem("@addressName");
-                if (value !== null) {
-                    setAddress(JSON.parse(value));
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        };
-        getData();
-    }, [refreshing]);
-
-    React.useEffect(() => {
-        if (address.dbKey) {
-            axios
-                .post(
-                    `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/Refine/Set?IntraMapsSession=${token}`,
-                    {
-                        dbKey: address.dbKey,
-                        infoPanelWidth: 0,
-                        mapKey: address.mapKey,
-                        mode: "Refresh",
-                        selectionLayer: address.selectionLayer,
-                        zoomType: "current",
-                    }
-                )
-                .then((res) =>
-                    setMainData(res.data.infoPanels.info1.feature.fields)
-                )
-                .catch((err) => console.error({ mainData: err.response.data }));
+    mainData.forEach((item) => {
+        if (item.caption == 'Garden Collection') {
+            garbageData = item?.value?.value;
         }
-    }, [address, refreshing]);
-
-    let garbageData = {};
-    let recycleData = {};
-    let gardenData = {};
-    mainData?.forEach((item) => {
-        // if (item.name == "Address") {
-        //     filteredData.push(item);
-        // }
-        if (item.name == "Garbage Collection") {
-            garbageData = item;
+        if (item.caption == 'Recycling Collection') {
+            recycleData = item?.value?.value;
         }
-        if (item.name == "Recycling Collection") {
-            recycleData = item;
+        if (item.caption == 'Garden Collection') {
+            gardenData = item?.value?.value;
         }
-        if (item.name == "Garden Collection") {
-            gardenData = item;
-        }
-        // if (item.name == "Street Sweeping") {
-        //     filteredData.push(item);
-        // }
-        // if (item.name == "Ward Name") {
-        //     filteredData.push(item);
-        // }
     });
 
     return (
@@ -112,10 +68,10 @@ export default function Home({ navigation }) {
                     Binny
                 </Text>
 
-                <Icon name="home" size={50} color={"#ffffff"} />
+                <Icon name="home" size={50} color={'#ffffff'} />
 
                 <Text style={[styles.text, { marginBottom: 30 }]}>
-                    {address?.displayValue || "Not found"}
+                    {name || 'Not found'}
                 </Text>
 
                 <View style={styles.textContainer}>
@@ -123,13 +79,13 @@ export default function Home({ navigation }) {
                         <Icon
                             name="label"
                             size={50}
-                            color={`${garbageColor ? garbageColor : "green"}`}
+                            color={`${garbageColor ? garbageColor : 'green'}`}
                         />
                     </View>
                     <View>
                         <Text style={styles.text}>Garbage bin</Text>
                         <Text style={styles.text}>
-                            {garbageData?.value || "Not found"}
+                            {garbageData || 'Not found'}
                         </Text>
                     </View>
                 </View>
@@ -138,13 +94,13 @@ export default function Home({ navigation }) {
                         <Icon
                             name="label"
                             size={50}
-                            color={`${recycleColor ? recycleColor : "blue"}`}
+                            color={`${recycleColor ? recycleColor : 'blue'}`}
                         />
                     </View>
                     <View>
                         <Text style={styles.text}>Recycle bin</Text>
                         <Text style={styles.text}>
-                            {recycleData?.value || "Not found"}
+                            {recycleData || 'Not found'}
                         </Text>
                     </View>
                 </View>
@@ -161,7 +117,7 @@ export default function Home({ navigation }) {
                     <View>
                         <Text style={styles.text}>Garden bin</Text>
                         <Text style={styles.text}>
-                            {gardenData?.value || "Not found"}
+                            {gardenData || 'Not found'}
                         </Text>
                     </View>
                 </View>
@@ -173,23 +129,23 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#000000",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
+        backgroundColor: '#000000',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
     },
     text: {
-        color: "#fff",
+        color: '#fff',
         fontSize: 18,
-        fontWeight: "bold",
+        fontWeight: 'bold',
         marginHorizontal: 10,
         marginVertical: 4,
     },
     textContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "80%",
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '80%',
         marginVertical: 20,
     },
 });

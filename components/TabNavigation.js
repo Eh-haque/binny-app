@@ -19,7 +19,7 @@ export default function TabNavigation({ navigation }) {
 
     return (
         <Tab.Navigator
-            initialRouteName={homeScreen}
+            initialRouteName={settingScreen}
             screenOptions={({ route }) => ({
                 headerStyle: {
                     backgroundColor: "#000000",

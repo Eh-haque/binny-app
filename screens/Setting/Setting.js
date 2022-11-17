@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 import {
     SafeAreaView,
     StyleSheet,
@@ -7,21 +7,21 @@ import {
     View,
     FlatList,
     Pressable,
-} from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { secondaryColor } from "../../utils/colors";
-import ColorPallet from "../../components/ColorPallet";
-import CheckLog from "../../hooks/CheckLog";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DataContext } from "../../hooks/DataContext";
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { secondaryColor } from '../../utils/colors';
+import ColorPallet from '../../components/ColorPallet';
+import CheckLog from '../../hooks/CheckLog';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DataContext } from '../../hooks/DataContext';
 
 export let colorRefresh = false;
 
 export default function Setting() {
     const { token } = CheckLog();
 
-    const [address, onChangeAddress] = React.useState("");
+    const [address, onChangeAddress] = React.useState('');
     const [configData, setConfigData] = React.useState([]);
     const [error, setError] = React.useState({});
 
@@ -29,13 +29,13 @@ export default function Setting() {
         if (address.trim()) {
             axios
                 .post(
-                    `https://gisweb.casey.vic.gov.au/IntraMaps90/ApplicationEngine/Search/?infoPanelWidth=0&mode=Refresh&form=918fd81b-bb3e-4bd1-8c78-1bd5b11fe1aa&resubmit=false&IntraMapsSession=${token}`,
+                    `https://gisweb.casey.vic.gov.au/IntraMaps22A/ApplicationEngine/Search/?infoPanelWidth=0&mode=Refresh&form=918fd81b-bb3e-4bd1-8c78-1bd5b11fe1aa&resubmit=false&IntraMapsSession=${token}`,
                     { fields: [address] }
                 )
                 .then((res) => setConfigData(res.data.fullText))
                 .catch((err) => {
                     if (err.response.data) {
-                        setError({ server: "Something went wrong" });
+                        setError({ server: 'Something went wrong' });
                     }
                     console.error({ configData: err.response.data });
                 });
@@ -54,13 +54,16 @@ export default function Setting() {
         garbageColor,
         recycleColor,
         gardenColor,
+        setAddressData,
     } = useContext(DataContext);
 
     const onPressFunction = async (item) => {
-        onChangeAddress("");
-        await AsyncStorage.setItem("@addressName", JSON.stringify(item));
+        onChangeAddress('');
+        await AsyncStorage.setItem('@addressName', JSON.stringify(item));
+        setAddressData(item);
+
         setConfigData([]);
-        setError({ res: "Address selected successfully." });
+        setError({ res: 'Address selected successfully.' });
     };
 
     const renderItem = ({ item, i }) => (
@@ -68,7 +71,7 @@ export default function Setting() {
             key={i}
             style={({ pressed }) => [
                 {
-                    backgroundColor: pressed ? "rgb(210, 230, 255)" : "white",
+                    backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
                 },
                 styles.wrapperCustom,
             ]}
@@ -106,14 +109,14 @@ export default function Setting() {
                 style={styles.textContainer}
                 onPress={() => {
                     setActiveColor(garbageColor);
-                    setActiveName("garbageColor");
+                    setActiveName('garbageColor');
                     setModalVisible(true);
                 }}
             >
                 <Icon
                     name="label"
                     size={50}
-                    color={`${garbageColor ? garbageColor : "green"}`}
+                    color={`${garbageColor ? garbageColor : 'green'}`}
                 />
                 <Text style={styles.text}>Garbage bin</Text>
             </Pressable>
@@ -122,14 +125,14 @@ export default function Setting() {
                 style={styles.textContainer}
                 onPress={() => {
                     setActiveColor(recycleColor);
-                    setActiveName("recycleColor");
+                    setActiveName('recycleColor');
                     setModalVisible(true);
                 }}
             >
                 <Icon
                     name="label"
                     size={50}
-                    color={`${recycleColor ? recycleColor : "blue"}`}
+                    color={`${recycleColor ? recycleColor : 'blue'}`}
                 />
                 <Text style={styles.text}>Recycling bin</Text>
             </Pressable>
@@ -138,7 +141,7 @@ export default function Setting() {
                 style={styles.textContainer}
                 onPress={() => {
                     setActiveColor(gardenColor);
-                    setActiveName("gardenColor");
+                    setActiveName('gardenColor');
                     setModalVisible(true);
                 }}
             >
@@ -160,7 +163,7 @@ export default function Setting() {
             {/* {error.server && (
                 <Text style={{ color: "red" }}>{error.server}</Text>
             )} */}
-            {error.res && <Text style={{ color: "#fff" }}>{error.res}</Text>}
+            {error.res && <Text style={{ color: '#fff' }}>{error.res}</Text>}
         </SafeAreaView>
     );
 }
@@ -168,20 +171,20 @@ export default function Setting() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#000000",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "100%",
+        backgroundColor: '#000000',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
     },
 
     inputContainer: {
         margin: 10,
-        width: "80%",
+        width: '80%',
     },
     inputText: {
-        color: "#ffffff",
-        textAlign: "left",
-        fontWeight: "bold",
+        color: '#ffffff',
+        textAlign: 'left',
+        fontWeight: 'bold',
         fontSize: 18,
     },
     input: {
@@ -189,21 +192,21 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
         marginTop: 10,
-        backgroundColor: "#ffffff",
+        backgroundColor: '#ffffff',
         borderRadius: 5,
     },
 
     text: {
-        color: "#fff",
+        color: '#fff',
         fontSize: 18,
-        fontWeight: "bold",
+        fontWeight: 'bold',
         marginHorizontal: 10,
     },
     textContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "80%",
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '80%',
     },
 
     button: {
@@ -212,22 +215,22 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     buttonOpen: {
-        backgroundColor: "#F194FF",
+        backgroundColor: '#F194FF',
     },
     buttonClose: {
-        backgroundColor: "#2196F3",
+        backgroundColor: '#2196F3',
     },
 
     card: {
-        position: "absolute",
+        position: 'absolute',
         zIndex: 99,
-        left: "10%",
-        right: "10%",
+        left: '10%',
+        right: '10%',
         top: 100,
-        bottom: "10%",
-        backgroundColor: "#2E2E2E",
+        bottom: '10%',
+        backgroundColor: '#2E2E2E',
         borderRadius: 5,
-        shadowColor: "#fff",
+        shadowColor: '#fff',
         shadowOffset: {
             width: 0,
             height: 2,
@@ -238,11 +241,11 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     wrapperCustom: {
-        width: "80%",
+        width: '80%',
         padding: 5,
         margin: 5,
-        backgroundColor: "#2E2E2E",
-        borderColor: "#ddd",
+        backgroundColor: '#2E2E2E',
+        borderColor: '#ddd',
         borderWidth: 1,
         borderRadius: 5,
     },

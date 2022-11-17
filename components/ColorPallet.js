@@ -1,15 +1,8 @@
-import {
-    StyleSheet,
-    Text,
-    View,
-    ScrollView,
-    Modal,
-    Pressable,
-} from "react-native";
-import React from "react";
-import ColorPicker from "react-native-wheel-color-picker";
-import { Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StyleSheet, Text, View, Modal, Pressable } from 'react-native';
+import React from 'react';
+import ColorPicker from 'react-native-wheel-color-picker';
+import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ColorPallet({
     activeColor,
@@ -27,7 +20,7 @@ export default function ColorPallet({
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
+                Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
             }}
         >
@@ -60,17 +53,17 @@ export default function ColorPallet({
 const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         marginTop: 22,
     },
     modalView: {
         margin: 30,
-        backgroundColor: "#2E2E2E",
+        backgroundColor: '#2E2E2E',
         borderRadius: 20,
         padding: 20,
-        alignItems: "center",
-        shadowColor: "#fff",
+        alignItems: 'center',
+        shadowColor: '#fff',
         shadowOffset: {
             width: 5,
             height: 2,
@@ -87,18 +80,18 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     buttonOpen: {
-        backgroundColor: "#F194FF",
+        backgroundColor: '#F194FF',
     },
     buttonClose: {
-        backgroundColor: "#2196F3",
+        backgroundColor: '#2196F3',
     },
     textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center",
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     modalText: {
         marginBottom: 15,
-        textAlign: "center",
+        textAlign: 'center',
     },
 });

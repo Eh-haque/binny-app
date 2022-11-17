@@ -5,25 +5,26 @@ import {
     Text,
     View,
     TextInput,
-} from "react-native";
-import React from "react";
-import { secondaryColor } from "../../utils/colors";
-import axios from "axios";
+} from 'react-native';
+import React from 'react';
+import { secondaryColor } from '../../utils/colors';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Signup({ navigation }) {
-    const [name, onChangeName] = React.useState("");
-    const [email, onChangeEmail] = React.useState("");
-    const [password, onChangePassword] = React.useState("");
+    const [name, onChangeName] = React.useState('');
+    const [email, onChangeEmail] = React.useState('');
+    const [password, onChangePassword] = React.useState('');
     const [error, setError] = React.useState({});
     const [active, setActive] = React.useState(0);
 
     const handleSignup = async () => {
         if (!name.trim()) {
-            setError({ name: "Name is required" });
+            setError({ name: 'Name is required' });
         } else if (!email.trim()) {
-            setError({ email: "Email is required" });
+            setError({ email: 'Email is required' });
         } else if (!password.trim()) {
-            setError({ password: "Password is required" });
+            setError({ password: 'Password is required' });
         } else {
             setError({});
 
@@ -34,15 +35,16 @@ export default function Signup({ navigation }) {
             };
             try {
                 const data = await axios.post(
-                    "https://map-api.makereal.click/signup",
+                    'https://map-api.makereal.click/signup',
                     payload
                 );
                 setError({ response: data.data.message });
 
-                if (data.data.message == "Signup successful") {
+                if (data.data.message == 'Signup successful') {
+                    await AsyncStorage.setItem('@binnyToken', data.data.token);
                     setTimeout(() => {
                         setError({});
-                        navigation.navigate("Log in");
+                        navigation.navigate('TabNavigation');
                     }, 1500);
                 }
             } catch (error) {
@@ -54,9 +56,9 @@ export default function Signup({ navigation }) {
         <SafeAreaView style={styles.container}>
             <View
                 style={{
-                    width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}
             >
                 <View style={styles.inputContainer}>
@@ -90,13 +92,13 @@ export default function Signup({ navigation }) {
             </View>
 
             <View>
-                <Text style={{ color: "red" }}>
+                <Text style={{ color: 'red' }}>
                     {error?.name ||
                         error?.email ||
                         error?.password ||
                         error?.validation}
                 </Text>
-                <Text style={{ color: "#fff" }}>{error?.response}</Text>
+                <Text style={{ color: '#fff' }}>{error?.response}</Text>
             </View>
 
             <View style={styles.buttonContainer}>
@@ -114,8 +116,8 @@ export default function Signup({ navigation }) {
                     <Text
                         style={
                             active === 1
-                                ? [{ color: "#fff" }, styles.buttonText]
-                                : [{ color: "#906500" }, styles.buttonText]
+                                ? [{ color: '#fff' }, styles.buttonText]
+                                : [{ color: '#906500' }, styles.buttonText]
                         }
                     >
                         Sign Up
@@ -123,7 +125,7 @@ export default function Signup({ navigation }) {
                 </Pressable>
             </View>
 
-            <Pressable onPress={() => navigation.navigate("Log in")}>
+            <Pressable onPress={() => navigation.navigate('Log in')}>
                 <Text style={styles.otherText}>ALREADY HAVE AN ACCOUNT?</Text>
             </Pressable>
         </SafeAreaView>
@@ -133,58 +135,58 @@ export default function Signup({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#000000",
-        alignItems: "center",
-        justifyContent: "space-around",
-        width: "100%",
+        backgroundColor: '#000000',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        width: '100%',
     },
     inputContainer: {
         margin: 10,
-        width: "80%",
+        width: '80%',
     },
     inputText: {
-        color: "#ffffff",
-        textAlign: "left",
-        fontWeight: "bold",
+        color: '#ffffff',
+        textAlign: 'left',
+        fontWeight: 'bold',
     },
     input: {
         height: 50,
         borderWidth: 1,
         padding: 10,
         marginTop: 10,
-        backgroundColor: "#ffffff",
+        backgroundColor: '#ffffff',
         borderRadius: 5,
     },
 
     // button style
     buttonContainer: {
         marginVertical: 25,
-        width: "80%",
+        width: '80%',
     },
     activeButton: {
         backgroundColor: secondaryColor,
         padding: 10,
         margin: 5,
         borderWidth: 1,
-        borderColor: "#906500",
+        borderColor: '#906500',
         borderRadius: 20,
     },
     inActiveButton: {
-        backgroundColor: "transparent",
+        backgroundColor: 'transparent',
         padding: 10,
         margin: 5,
         borderWidth: 1,
-        borderColor: "#906500",
+        borderColor: '#906500',
         borderRadius: 20,
     },
     buttonText: {
-        textAlign: "center",
-        fontWeight: "bold",
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
 
     otherText: {
-        color: "#979797",
-        textAlign: "center",
-        fontWeight: "bold",
+        color: '#979797',
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
 });
